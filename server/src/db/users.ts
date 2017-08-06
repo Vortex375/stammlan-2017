@@ -1,5 +1,6 @@
 import mongoose = require("mongoose")
 import bcrypt = require("bcryptjs")
+import _ = require("lodash")
 
 const UserSchema = new mongoose.Schema({
   username: {type: String, index: true, unique: true},
@@ -50,6 +51,11 @@ export const UserDB = {
     return User.findOne({username: username})
       .then(user => user === null
           ? false
-          : bcrypt.compare((<any> user).password, password))
+          : bcrypt.compare(password, (<any> user).password))
   },
+
+  list() {
+    return User.find()
+      .then(users => _.map(users, u => _.pick(u, "username", "admin", "created")))
+  }
 }
